@@ -21,7 +21,7 @@ const fixArrParam = params =>
     (fixed, key) => ({
       ...fixed,
       ...(Array.isArray(params[key])
-        ? params[key].reduce((acc, curr) => ({ [`${key}[]`]: curr }))
+        ? params[key].reduce((acc, curr) => ({ [`${key}[]`]: curr }), {})
         : { [key]: params[key] }),
     }),
     {},
