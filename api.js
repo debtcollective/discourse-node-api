@@ -27,6 +27,19 @@ const fixArrParam = params =>
     {},
   );
 
+/**
+ * Must always be called after fixArrParam otherwise the typeof x === 'object' will be deceiving
+ * @param {object} params
+ */
+const noObjectParams = params =>
+  Object.keys(params).reduce(
+    (fixed, key) => ({
+      ...fixed,
+      ...(typeof params[key] === 'object' ? {} : params[key]),
+    }),
+    {},
+  );
+
 const paramsAsPropOf = params => asPropOf =>
   asPropOf
     ? Object.keys(params).reduce(
@@ -43,7 +56,7 @@ const paramsAsPropOf = params => asPropOf =>
  * and all parameters are listed as properties of some entity
  */
 const fixParams = params => asPropOf => {
-  const ps = noNulls(fixArrParam(paramsAsPropOf(params)(asPropOf)));
+  const ps = noNulls(noObjectParams(fixArrParam(paramsAsPropOf(params)(asPropOf))));
   if (Object.keys(ps).length) {
     console.info(ps);
   }
