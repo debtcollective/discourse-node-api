@@ -1,5 +1,5 @@
-module.exports = ({ api_key, api_username = 'system', apiUrl }) => {
-  const api = require('./api')({ api_url, api_username, apiUrl });
+module.exports = ({ api_key, api_username = 'system', api_url }) => {
+  const api = require('./api')({ api_key, api_username, api_url });
 
   return {
     tagGroups: require('./tagGroups')(api),

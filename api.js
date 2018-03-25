@@ -56,8 +56,9 @@ const pullDeleting = (prop, obj) => {
 
 const extractBody = req => prop => req.then(({ body }) => (prop ? body[prop] : body));
 
-module.exports = ({ api_url, api_username = 'system', apiUrl }) => {
-  const fixUrl = url => `${!url.startsWith(apiUrl) ? apiUrl : ''}${url}`;
+module.exports = ({ api_key, api_username = 'system', api_url }) => {
+  const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ''}${url}`;
+  const auth = Object.freeze({ api_key, api_username });
 
   const sa = superagent.agent();
 
