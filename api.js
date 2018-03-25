@@ -56,7 +56,7 @@ const paramsAsPropOf = params => asPropOf =>
  * and all parameters are listed as properties of some entity
  */
 const fixParams = params => asPropOf => {
-  const ps = noNulls(noObjectParams(fixArrParam(paramsAsPropOf(params)(asPropOf))));
+  const ps = noObjectParams(fixArrParam(paramsAsPropOf(params)(asPropOf)));
   if (Object.keys(ps).length) {
     console.info(ps);
   }
