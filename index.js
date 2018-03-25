@@ -1,4 +1,4 @@
-module.exports = ({ api_key, api_username = 'system', api_url }) => {
+const discourse = ({ api_key, api_username = 'system', api_url }) => {
   const api = require('./api')({ api_key, api_username, api_url });
 
   return {
@@ -7,6 +7,9 @@ module.exports = ({ api_key, api_username = 'system', api_url }) => {
     groups: require('./groups')(api),
     topics: require('./topics')(api),
     posts: require('./posts')(api),
-    enums: require('./enums'),
   };
 };
+
+discourse.enums = require('./enums');
+
+module.exports = discourse;
