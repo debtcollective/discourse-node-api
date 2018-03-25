@@ -1,0 +1,13 @@
+{
+  "name": "discourse-node-api",
+  "version": "0.0.1",
+  "description": "Node.js API for Discourse's REST API",
+  "main": "index.js",
+  "repository": "github.com/debtsyndicate/discourse-node-api",
+  "author": "The Debt Syndicate",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "superagent": "^3.8.2"
+  }
+}
