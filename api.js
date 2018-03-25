@@ -35,7 +35,7 @@ const noObjectParams = params =>
   Object.keys(params).reduce(
     (fixed, key) => ({
       ...fixed,
-      ...(typeof params[key] === 'object' ? {} : params[key]),
+      ...(typeof params[key] === 'object' ? {} : { [key]: params[key] }),
     }),
     {},
   );
