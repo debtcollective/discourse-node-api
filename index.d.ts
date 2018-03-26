@@ -1,4 +1,6 @@
-declare namespace DiscourseApi {
+declare function discourse(config: discourseApi.DiscourseApiConfiguration): discourseApi.DiscourseApi;
+
+declare namespace discourseApi {
   export interface DiscourseApi {
     tagGroups: TagGroups;
     categories: Categories;
@@ -7,8 +9,6 @@ declare namespace DiscourseApi {
     posts: Posts;
     enums: Enums;
   }
-
-  export = DiscourseApi;
 
   export interface DiscourseApiShuttle {
     authGet: (url: String, bodyProp?: String) => (params?: Params) => Promise<Object>;
@@ -113,5 +113,3 @@ declare namespace DiscourseApi {
     trust: Trust;
   }
 }
-
-export = DiscourseApi;

@@ -1,6 +1,6 @@
 /**
- * @param {DiscourseApi.DiscourseApiShuttle} api
- * @return {DiscourseApi.Groups}
+ * @param {discourseApi.DiscourseApiShuttle} api
+ * @return {discourseApi.Groups}
  */
 module.exports = api => ({
   get: api.authGet('/groups/search.json'),

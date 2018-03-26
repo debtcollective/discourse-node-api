@@ -1,6 +1,6 @@
 /**
- * @param {DiscourseApi.DiscourseApiShuttle} api
- * @return {DiscourseApi.TagGroups}
+ * @param {discourseApi.DiscourseApiShuttle} api
+ * @return {discourseApi.TagGroups}
  */
 module.exports = api => ({
   getAll: api.authGet('/tag_groups.json', 'tag_groups'),

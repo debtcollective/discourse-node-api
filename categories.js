@@ -1,6 +1,6 @@
 /**
- * @param {DiscourseApi.DiscourseApiShuttle} api
- * @return {DiscourseApi.Categories}
+ * @param {discourseApi.DiscourseApiShuttle} api
+ * @return {discourseApi.Categories}
  */
 module.exports = api => ({
   getAll: () =>

@@ -1,6 +1,5 @@
 /**
- * @param {DiscourseApi.DiscourseApiConfiguration} config
- * @return {DiscourseApi.DiscourseApi}
+ * @type {discourseApi.DiscourseApi}
  */
 const discourse = Object.assign(
   config => {

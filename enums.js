@@ -1,5 +1,5 @@
 /**
- * @type {DiscourseApi.Enums}
+ * @type {discourseApi.Enums}
  */
 module.exports = {
   visibility: {

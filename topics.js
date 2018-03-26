@@ -1,6 +1,6 @@
 /**
- * @param {DiscourseApi.DiscourseApiShuttle} api
- * @return {DiscourseApi.Topics}
+ * @param {discourseApi.DiscourseApiShuttle} api
+ * @return {discourseApi.Topics}
  */
 module.exports = api => ({
   get: id => api.authGet(`/t/${id}.json`)(),
