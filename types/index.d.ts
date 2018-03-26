@@ -8,6 +8,8 @@ declare namespace DiscourseApi {
     enums: Enums;
   }
 
+  export = DiscourseApi;
+
   export interface DiscourseApiShuttle {
     authGet: (url: String, bodyProp?: String) => (params?: Params) => Promise<Object>;
     authPost: (url: String, bodyProp?: String) => (body?: Params) => Promise<Object>;
@@ -111,3 +113,5 @@ declare namespace DiscourseApi {
     trust: Trust;
   }
 }
+
+export = DiscourseApi;

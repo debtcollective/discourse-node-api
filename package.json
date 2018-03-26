@@ -9,5 +9,6 @@
   "private": false,
   "dependencies": {
     "superagent": "^3.8.2"
-  }
+  },
+  "types": "./types/index.d.ts"
 }
