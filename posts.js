@@ -1,6 +1,10 @@
-module.exports = ({ authGet, authPost, authPut, authDelete }) => ({
-  get: id => authGet(`/posts/${id}.json`)(),
+/**
+ * @param {DiscourseApi.DiscourseApiShuttle} api
+ * @return {DiscourseApi.Posts}
+ */
+module.exports = api => ({
+  get: id => api.authGet(`/posts/${id}.json`)(),
   // post[raw] is the only update-able field on a post.
   // putting the whole thing breaks superagent
-  update: p => authPut(`/posts/${p.id}`)({ raw: p.raw, wiki: p.wiki, asPropOf: 'post' }),
+  update: p => api.authPut(`/posts/${p.id}`)({ raw: p.raw, wiki: p.wiki, asPropOf: 'post' }),
 });

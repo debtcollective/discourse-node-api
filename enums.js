@@ -1,3 +1,6 @@
+/**
+ * @type {DiscourseApi.Enums}
+ */
 module.exports = {
   visibility: {
     nobody: 0,

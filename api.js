@@ -1,5 +1,9 @@
 const superagent = require('superagent');
 
+/**
+ * Superagent middleware to log request metadata
+ * @param {DiscourseApi.Req} req
+ */
 const log = req => {
   const { method, url, data, headers } = req.toJSON();
   console.info(method, url);
@@ -7,15 +11,24 @@ const log = req => {
   if (headers) console.info(JSON.stringify(headers));
 };
 
-const noNulls = (exports.noNulls = obj => {
+/**
+ * Ensures no null properties exist which break form-data
+ * @param {Object} obj
+ * @return {Object}
+ */
+const noNulls = obj => {
   Object.keys(obj).forEach(k => {
     if (obj[k] === null || obj[k] === undefined) {
       delete obj[k];
     }
   });
   return obj;
-});
+};
 
+/**
+ * Fixes array properties for form-data
+ * @param {DiscourseApi.Params} params Params to fix array properties of
+ */
 const fixArrParam = params =>
   Object.keys(params).reduce(
     (fixed, key) => ({
@@ -29,7 +42,8 @@ const fixArrParam = params =>
 
 /**
  * Must always be called after fixArrParam otherwise the typeof x === 'object' will be deceiving
- * @param {object} params
+ * @param {DiscourseApi.Params} params
+ * @return {DiscourseApi.Params} params but without any object properties
  */
 const noObjectParams = params =>
   Object.keys(params).reduce(
@@ -40,6 +54,14 @@ const noObjectParams = params =>
     {},
   );
 
+/**
+ * Prepends asPropOf to all properties of params for form-data. For example,
+ * if given `{ foo: 'bar' }` for `params` and `'bang'` for `asPropOf`, it will
+ * return `{ 'bang[foo]': 'bar' }`.
+ *
+ * @param {DiscourseApi.Params} params The parameters to cast as properties of asPropOf
+ * @return {(asPropOf: string) => DiscourseApi.Params}
+ */
 const paramsAsPropOf = params => asPropOf =>
   asPropOf
     ? Object.keys(params).reduce(
@@ -54,6 +76,9 @@ const paramsAsPropOf = params => asPropOf =>
 /**
  * Ensure no nulls, array parameters are correctly formatted
  * and all parameters are listed as properties of some entity
+ *
+ * @param {params: DiscourseApi.Params} params The params to clean
+ * @return {(asPropOf: string) => DiscourseApi.Params} The cleaned params
  */
 const fixParams = params => asPropOf => {
   const ps = noObjectParams(fixArrParam(paramsAsPropOf(params)(asPropOf)));
@@ -63,15 +88,32 @@ const fixParams = params => asPropOf => {
   return ps;
 };
 
+/**
+ * Deletes and returns the value of the property from obj
+ * @param {string} prop Name of property to return and delete from obj
+ * @param {Object} obj Object from which to delete the property
+ */
 const pullDeleting = (prop, obj) => {
   const v = obj[prop];
   delete obj[prop];
   return v;
 };
 
+/**
+ * Returns a function taking a property name to extract from a request
+ * @param {Promise<Object>} req The request from which to extract the body property
+ * @return {(prop: String) => Promise<any>} The extracted property
+ */
 const extractBody = req => prop => req.then(({ body }) => (prop ? body[prop] : body));
 
-module.exports = ({ api_key, api_username = 'system', api_url }) => {
+/**
+ * Constructs an instance of the Discourse API
+ * @param {DiscourseApi.DiscourseApiConfiguration} config API configuration parameters
+ *
+ * @return {DiscourseApi.DiscourseApiShuttle}
+ */
+module.exports = config => {
+  const { api_key, api_username = 'system', api_url } = config;
   const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ''}${url}`;
   const auth = Object.freeze({ api_key, api_username });
 
