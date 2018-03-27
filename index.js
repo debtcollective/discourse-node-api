@@ -12,6 +12,8 @@ const discourse = Object.assign(
       groups: require('./groups')(api),
       topics: require('./topics')(api),
       posts: require('./posts')(api),
+      enums: require('./enums'),
+      utils: require('./utils'),
     };
   },
   {
