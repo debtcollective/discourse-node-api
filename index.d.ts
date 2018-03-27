@@ -68,6 +68,7 @@ declare namespace discourseApi {
 
   export interface Categories {
     getAll(): Promise<Category[]>;
+    get(id: number): Promise<Category>;
     create(c: Category): Promise<Category>;
     update(cat: Category): Promise<Category>;
     getAboutTopic(cat: Category): Promise<Topic>;

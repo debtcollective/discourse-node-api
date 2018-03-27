@@ -7,6 +7,7 @@ module.exports = api => ({
     api
       .authGet('/categories.json', 'category_list')()
       .then(({ categories }) => categories),
+  get: id => api.authGet(`/c/${id}/show.json`)(),
   create: api.authPost('/categories.json', 'category'),
   update: cat => api.authPut(`/categories/${cat.id}`)(cat),
   getAboutTopic: cat => api.authGet(`/t/${cat.topic_url.split('/').slice(-1)[0]}.json`)(),
