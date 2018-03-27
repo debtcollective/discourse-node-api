@@ -14,7 +14,10 @@ const discourse = Object.assign(
       posts: require('./posts')(api),
     };
   },
-  { enums: require('./enums') },
+  {
+    enums: require('./enums'),
+    utils: require('./utils'),
+  },
 );
 
 module.exports = discourse;

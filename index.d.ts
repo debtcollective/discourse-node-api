@@ -8,6 +8,7 @@ declare namespace discourseApi {
     topics: Topics;
     posts: Posts;
     enums: Enums;
+    utils: Utils;
   }
 
   export interface DiscourseApiShuttle {
@@ -111,5 +112,17 @@ declare namespace discourseApi {
   export interface Enums {
     visibility: Visibility;
     trust: Trust;
+  }
+
+  export const paramsAsPropsOf = (params: Params) => (asPropsOf: string) => Params;
+  export const fixArrParam = (params: Params) => Params;
+  export const mapObjKeys = (mapKey: (key: string, value: any) => string) => (obj: any) => any;
+  export const flattenObj = (obj: any) => any;
+
+  export interface Utils {
+    paramsAsPropsOf: typeof paramsAsPropsOf;
+    fixArrParam: typeof fixArrParam;
+    mapObjKeys: typeof mapObjKeys;
+    flattenObj: typeof flattenObj;
   }
 }

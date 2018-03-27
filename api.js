@@ -1,4 +1,5 @@
 const superagent = require('superagent');
+const { paramsAsPropOf, fixArrParam } = require('./utils');
 
 /**
  * Superagent middleware to log request metadata
@@ -26,21 +27,6 @@ const noNulls = obj => {
 };
 
 /**
- * Fixes array properties for form-data
- * @param {discourseApi.Params} params Params to fix array properties of
- */
-const fixArrParam = params =>
-  Object.keys(params).reduce(
-    (fixed, key) => ({
-      ...fixed,
-      ...(Array.isArray(params[key])
-        ? params[key].reduce((acc, curr) => ({ [`${key}[]`]: curr }), {})
-        : { [key]: params[key] }),
-    }),
-    {},
-  );
-
-/**
  * Must always be called after fixArrParam otherwise the typeof x === 'object' will be deceiving
  * @param {discourseApi.Params} params
  * @return {discourseApi.Params} params but without any object properties
@@ -53,25 +39,6 @@ const noObjectParams = params =>
     }),
     {},
   );
-
-/**
- * Prepends asPropOf to all properties of params for form-data. For example,
- * if given `{ foo: 'bar' }` for `params` and `'bang'` for `asPropOf`, it will
- * return `{ 'bang[foo]': 'bar' }`.
- *
- * @param {discourseApi.Params} params The parameters to cast as properties of asPropOf
- * @return {(asPropOf: string) => discourseApi.Params}
- */
-const paramsAsPropOf = params => asPropOf =>
-  asPropOf
-    ? Object.keys(params).reduce(
-        (ps, k) => ({
-          ...ps,
-          [`${asPropOf}[${k}]`]: params[k],
-        }),
-        {},
-      )
-    : params;
 
 /**
  * Ensure no nulls, array parameters are correctly formatted
