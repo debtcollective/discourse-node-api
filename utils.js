@@ -60,9 +60,12 @@ const mapObjKeys = (exports.mapObjKeys = mapKey => obj =>
  * @param {any} obj Object to flatten
  */
 const flattenObj = (exports.flattenObj = obj =>
-  Object.keys(obj).reduce((flat, key) => ({
-    ...flat,
-    ...(typeof obj[key] === 'object' && !Array.isArray(obj[key])
-      ? flattenObj(mapObjKeys(innerKey => `${key}[${innerKey}]`)(obj[key]))
-      : { [key]: obj[key] }),
-  })));
+  Object.keys(obj).reduce(
+    (flat, key) => ({
+      ...flat,
+      ...(typeof obj[key] === 'object' && !Array.isArray(obj[key])
+        ? flattenObj(mapObjKeys(innerKey => `${key}[${innerKey}]`)(obj[key]))
+        : { [key]: obj[key] }),
+    }),
+    {},
+  ));
