@@ -1,12 +1,18 @@
-declare function discourse(config: discourseApi.DiscourseApiConfiguration): discourseApi.DiscourseApi;
-
 declare namespace discourseApi {
+  declare function discourse(config: discourseApi.DiscourseApiConfiguration): discourseApi.DiscourseApi;
+  export type discourse = typeof discourse & discourseApi.UtilsEnums;
+
   export interface DiscourseApi {
     tagGroups: TagGroups;
     categories: Categories;
     groups: Groups;
     topics: Topics;
     posts: Posts;
+    enums: Enums;
+    utils: Utils;
+  }
+
+  export interface UtilsEnums {
     enums: Enums;
     utils: Utils;
   }
@@ -114,15 +120,10 @@ declare namespace discourseApi {
     trust: Trust;
   }
 
-  export const paramsAsPropsOf = (params: Params) => (asPropsOf: string) => Params;
-  export const fixArrParam = (params: Params) => Params;
-  export const mapObjKeys = (mapKey: (key: string, value: any) => string) => (obj: any) => any;
-  export const flattenObj = (obj: any) => any;
-
   export interface Utils {
-    paramsAsPropsOf: typeof paramsAsPropsOf;
-    fixArrParam: typeof fixArrParam;
-    mapObjKeys: typeof mapObjKeys;
-    flattenObj: typeof flattenObj;
+    paramsAsPropsOf: (params: Params) => (asPropsOf: string) => Params;
+    fixArrParam: (params: Params) => Params;
+    mapObjKeys: (mapKey: (key: string, value: any) => string) => (obj: any) => any;
+    flattenObj: (obj: any) => any;
   }
 }
