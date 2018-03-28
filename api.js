@@ -1,44 +1,20 @@
 const superagent = require('superagent');
-const { paramsAsPropOf, fixArrParam } = require('./utils');
+const { paramsAsPropOf, applyArrayParams, extractBody, noObjects, noNulls, splitProps } = require('./utils');
+
+const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;
 
 /**
  * Superagent middleware to log request metadata
  * @param {discourseApi.Req} req
  */
 const log = req => {
-  const { method, url, data, headers } = req.toJSON();
-  console.info(method, url);
-  if (data) console.info(data);
-  if (headers) console.info(JSON.stringify(headers));
+  if (!suppressLogs) {
+    const { method, url, data, headers } = req.toJSON();
+    console.info(method, url);
+    if (data) console.info(data);
+    if (headers) console.info(JSON.stringify(headers));
+  }
 };
-
-/**
- * Ensures no null properties exist which break form-data
- * @param {Object} obj
- * @return {Object}
- */
-const noNulls = obj => {
-  Object.keys(obj).forEach(k => {
-    if (obj[k] === null || obj[k] === undefined) {
-      delete obj[k];
-    }
-  });
-  return obj;
-};
-
-/**
- * Must always be called after fixArrParam otherwise the typeof x === 'object' will be deceiving
- * @param {discourseApi.Params} params
- * @return {discourseApi.Params} params but without any object properties
- */
-const noObjectParams = params =>
-  Object.keys(params).reduce(
-    (fixed, key) => ({
-      ...fixed,
-      ...(typeof params[key] === 'object' ? {} : { [key]: params[key] }),
-    }),
-    {},
-  );
 
 /**
  * Ensure no nulls, array parameters are correctly formatted
@@ -48,12 +24,14 @@ const noObjectParams = params =>
  * @return {(asPropOf: string) => discourseApi.Params} The cleaned params
  */
 const fixParams = params => asPropOf => {
-  const ps = noObjectParams(fixArrParam(paramsAsPropOf(params)(asPropOf)));
-  if (Object.keys(ps).length) {
+  const ps = noObjects(paramsAsPropOf(params)(asPropOf));
+  if (Object.keys(ps).length && !suppressLogs) {
     console.info(ps);
   }
   return ps;
 };
+
+const splitBodyProps = body => Promise.resolve(splitProps(Array.isArray, body));
 
 /**
  * Deletes and returns the value of the property from obj
@@ -66,12 +44,19 @@ const pullDeleting = (prop, obj) => {
   return v;
 };
 
-/**
- * Returns a function taking a property name to extract from a request
- * @param {Promise<Object>} req The request from which to extract the body property
- * @return {(prop: String) => Promise<any>} The extracted property
- */
-const extractBody = req => prop => req.then(({ body }) => (prop ? body[prop] : body));
+const makeBodiedRequest = (req, bodyProp, body, auth) =>
+  extractBody(
+    splitBodyProps(body).then(({ left: arr, right: nonArr }) =>
+      // console.error(arr, nonArr),
+      Object.keys(arr).reduce(
+        (req, k) => (applyArrayParams(k, arr[k], req), req),
+        req.use(log).field({ ...fixParams(nonArr)(pullDeleting('asPropOf', nonArr)), ...auth }),
+      ),
+    ),
+  )(bodyProp);
+
+const makeQueriedRequest = (req, bodyProp, params, auth) =>
+  extractBody(req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }))(bodyProp);
 
 /**
  * Constructs an instance of the Discourse API
@@ -89,42 +74,22 @@ module.exports = config => {
   const authGet = (url, bodyProp = null) => (params = {}) =>
     !url.startsWith(api_url)
       ? authGet(fixUrl(url), bodyProp)(params)
-      : extractBody(
-          sa
-            .get(url)
-            .use(log)
-            .query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }),
-        )(bodyProp);
+      : makeQueriedRequest(sa.get(url), bodyProp, params, auth);
 
   const authPost = (url, bodyProp = null) => (body = {}) =>
     !url.startsWith(api_url)
-      ? authPost(fixUrl(url))(body)
-      : extractBody(
-          sa
-            .post(url)
-            .use(log)
-            .field({ ...fixParams(body)(pullDeleting('asPropOf', body)), ...auth }),
-        )(bodyProp);
+      ? authPost(fixUrl(url), bodyProp)(body)
+      : makeBodiedRequest(sa.post(url), bodyProp, body, auth);
 
   const authPut = (url, bodyProp = null) => (body = {}) =>
     !url.startsWith(api_url)
-      ? authPut(fixUrl(url))(body)
-      : extractBody(
-          sa
-            .put(url)
-            .use(log)
-            .field({ ...fixParams(body)(pullDeleting('asPropOf', body)), ...auth }),
-        )(bodyProp);
+      ? authPut(fixUrl(url), bodyProp)(body)
+      : makeBodiedRequest(sa.put(url), bodyProp, body, auth);
 
   const authDelete = (url, bodyProp = null) => (params = {}) =>
     !url.startsWith(api_url)
-      ? authDelete(fixUrl(url))(params)
-      : extractBody(
-          sa
-            .delete(url)
-            .use(log)
-            .query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }),
-        )(bodyProp);
+      ? authDelete(fixUrl(url), bodyProp)(params)
+      : makeQueriedRequest(sa.delete(url), bodyProp, params, auth);
 
   return { authGet, authPost, authPut, authDelete };
 };

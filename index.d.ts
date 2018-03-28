@@ -1,6 +1,9 @@
-declare namespace discourseApi {
+// import { SuperAgentRequest } from 'superagent';
+
+export namespace discourseApi {
   declare function discourse(config: discourseApi.DiscourseApiConfiguration): discourseApi.DiscourseApi;
   export type discourse = typeof discourse & discourseApi.UtilsEnums;
+  export type SuperAgentRequest = SuperAgentRequest;
 
   export interface DiscourseApi {
     tagGroups: TagGroups;
@@ -123,8 +126,13 @@ declare namespace discourseApi {
 
   export interface Utils {
     paramsAsPropsOf: (params: Params) => (asPropsOf: string) => Params;
-    fixArrParam: (params: Params) => Params;
+    applyArrayParams: (
+      key: string,
+      values: (string | number | boolean | Blob | Buffer)[],
+      req: SuperAgentRequest,
+    ) => SuperAgentRequest;
     mapObjKeys: (mapKey: (key: string, value: any) => string) => (obj: any) => any;
     flattenObj: (obj: any) => any;
+    splitProps: (predicate: (v: any, k: string | number) => boolean, obj: any) => { left: any; right: any };
   }
 }
