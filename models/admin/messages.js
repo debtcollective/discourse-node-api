@@ -31,7 +31,10 @@ const message = api =>
     }
   };
 
-module.exports = api => ({
-  Message: message(api),
-  create: config => new (message(api))(config).send(),
-});
+module.exports = api => {
+  const Message = message(api);
+  return {
+    Message,
+    create: config => new Message(config).send(),
+  };
+};
