@@ -1,5 +1,6 @@
 const superagent = require('superagent');
 const { paramsAsPropOf, applyArrayParams, extractBody, noObjects, noNulls, splitProps } = require('./utils');
+const qs = require('qs');
 
 const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;
 
@@ -44,16 +45,14 @@ const pullDeleting = (prop, obj) => {
   return v;
 };
 
-const makeBodiedRequest = (req, bodyProp, body, auth) =>
-  extractBody(
-    splitBodyProps(body).then(({ left: arr, right: nonArr }) =>
-      // console.error(arr, nonArr),
-      Object.keys(arr).reduce(
-        (req, k) => (applyArrayParams(k, arr[k], req), req),
-        req.use(log).field({ ...fixParams(nonArr)(pullDeleting('asPropOf', nonArr)), ...auth }),
-      ),
-    ),
-  )(bodyProp);
+const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
+  const string = qs.stringify(body);
+  req
+    .use(log)
+    .query(string)
+    .field(auth);
+  return extractBody(req)(bodyProp);
+};
 
 const makeQueriedRequest = (req, bodyProp, params, auth) =>
   extractBody(req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }))(bodyProp);

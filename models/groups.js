@@ -4,7 +4,7 @@
  */
 module.exports = api => ({
   get: api.authGet('/groups/search.json'),
-  create: g => api.authPost('/admin/groups')({ ...g, asPropOf: 'group' }),
-  update: g => api.authPut(`/admin/groups/${g.id}`)({ ...g, asPropOf: 'group' }),
+  create: g => api.authPost('/admin/groups')({ group: g }),
+  update: g => api.authPut(`/admin/groups/${g.id}`)({ group: g }),
   getMembers: groupName => api.authGet(`/groups/${groupName}/members.json`)(),
 });
