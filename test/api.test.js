@@ -76,20 +76,6 @@ const testCorrectedQueryArray = orig => r => (
   })
 );
 
-const testCorrectedBodyArray = orig => ({ body }) => {
-  Object.keys(orig).forEach(k => {
-    const v = orig[k];
-    const regexStr = `${k}\\[\\]"\r\n\r\n(.*?)\r\n`;
-    const foundTimes = body.match(new RegExp(regexStr, 'g')).length;
-    expect(foundTimes).eq(v.length);
-    const toExec = new RegExp(regexStr, 'gi');
-    for (let i = 0; i < foundTimes; i++) {
-      const matched = toExec.exec(body);
-      expect(matched[1]).eq(v[i]);
-    }
-  });
-};
-
 describe('api', () => {
   describe('authGet', () => {
     it('should include the credentials in the query', () =>
@@ -130,13 +116,6 @@ describe('api', () => {
       api
         .authPut(returnReq)({ twenty: null })
         .then(testNoBodiedNull));
-
-    it('should correctly payload array parameters', () => {
-      const orig = { arr: ['1', '2', '3'] };
-      return api
-        .authPut(returnReq)(orig)
-        .then(testCorrectedBodyArray(orig));
-    });
   });
 
   describe('authPost', () => {
@@ -154,13 +133,6 @@ describe('api', () => {
       api
         .authPost(returnReq)({ twenty: null })
         .then(testNoBodiedNull));
-
-    it('should correctly payload array parameters', () => {
-      const orig = { arr: ['1', '2', '3'] };
-      return api
-        .authPost(returnReq)(orig)
-        .then(testCorrectedBodyArray(orig));
-    });
   });
 
   describe('authDelete', () => {
