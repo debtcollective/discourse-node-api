@@ -1,5 +1,5 @@
 const superagent = require('superagent');
-const { paramsAsPropOf, applyArrayParams, extractBody, noObjects, noNulls, splitProps } = require('./utils');
+const { paramsAsPropOf, extractBody, noObjects, splitProps } = require('./utils');
 const qs = require('qs');
 
 const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;

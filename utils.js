@@ -32,14 +32,6 @@ const paramsAsPropOf = params => asPropOf =>
     : params;
 
 /**
- * Applies array parameters to a request given a key, an array of values and the request
- *
- * @param {string} key Params to fix array properties of
- * @param {(string|number|boolean|Blob|Buffer)[]} values Array of values to apply to the request
- * @param {SuperAgentRequest} req The request to apply the array parameters to
- * @return {SuperAgentRequest} The request with the parameters applied
- */
-const applyArrayParams = (key, values, req) => (values.forEach(v => req.field(`${key}[]`, v)), req);
 
 /**
  * Maps the keys of an object to new keys using the mapKey function
@@ -115,13 +107,6 @@ const splitProps = (predicate, obj) =>
 const extractBody = req => prop => req.then(({ body }) => (prop ? body[prop] : body));
 
 /**
- * Ensures no null properties exist which break form-data
- * @param {Object} obj
- * @return {Object}
- */
-const noNulls = obj => excludeBy(v => v === undefined || v === nul);
-
-/**
  * Must always be called after fixArrParam otherwise the typeof x === 'object' will be deceiving
  * @param {discourseApi.Params} params
  * @return {discourseApi.Params} params but without any object properties
@@ -131,10 +116,8 @@ const noObjects = excludeBy(v => typeof v === 'object' && !Array.isArray(v));
 module.exports = {
   flattenObj,
   mapObjKeys,
-  applyArrayParams,
   paramsAsPropOf,
   splitProps,
-  noNulls,
   extractBody,
   excludeBy,
   noObjects,
