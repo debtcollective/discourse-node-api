@@ -3,7 +3,8 @@
  * @return {discourseApi.Categories}
  */
 module.exports = api => ({
-  getAll: () =>
+  getTopLevel: () =>
+    // gets all categories that have no parents
     api
       .authGet('/categories.json', 'category_list')()
       .then(({ categories }) => categories),
