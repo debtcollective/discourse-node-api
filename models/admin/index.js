@@ -4,4 +4,5 @@
 module.exports = api => ({
   users: require('./users')(api),
   messages: require('./messages')(api),
+  settings: require('./settings')(api),
 });

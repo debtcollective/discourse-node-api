@@ -45,17 +45,36 @@ const pullDeleting = (prop, obj) => {
   return v;
 };
 
+const sleep = (exports.sleep = (seconds = 0.75) => {
+  const ms = seconds * 1000;
+  const start = Date.now();
+  while (Date.now() - start < ms) {}
+});
+
+// use to avoid tripping the discourse request limiter
+const sleepAsync = seconds =>
+  new Promise(res => {
+    sleep(seconds);
+    res();
+  });
+
+const defaultSleepSeconds = 1;
+
 const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
-  const string = qs.stringify(body);
-  req
-    .use(log)
-    .query(string)
-    .field(auth);
-  return extractBody(req)(bodyProp);
+  sleepAsync(defaultSleepSeconds).then(() => {
+    const string = qs.stringify(body);
+    req
+      .use(log)
+      .query(string)
+      .field(auth);
+    return extractBody(req)(bodyProp);
+  });
 };
 
 const makeQueriedRequest = (req, bodyProp, params, auth) =>
-  extractBody(req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }))(bodyProp);
+  sleepAsync(defaultSleepSeconds).then(() =>
+    extractBody(req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }))(bodyProp),
+  );
 
 /**
  * Constructs an instance of the Discourse API
