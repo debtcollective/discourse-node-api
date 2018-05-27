@@ -61,7 +61,7 @@ const sleepAsync = seconds =>
 const defaultSleepSeconds = 1;
 
 const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
-  sleepAsync(defaultSleepSeconds).then(() => {
+  return sleepAsync(defaultSleepSeconds).then(() => {
     const string = qs.stringify(body);
     req
       .use(log)
