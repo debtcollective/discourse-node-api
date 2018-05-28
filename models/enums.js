@@ -16,4 +16,9 @@ module.exports = {
     collectiveAdmin: 3,
     platformAdmin: 4,
   },
+  permission: {
+    create_reply_see: 1,
+    reply_see: 2,
+    see: 3,
+  },
 };
