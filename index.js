@@ -3,8 +3,14 @@
  */
 const discourse = Object.assign(
   config => {
-    const { api_key, api_username = 'system', api_url } = config;
-    const api = require('./api')({ api_key, api_username, api_url });
+    const {
+      api_key,
+      api_username = 'system',
+      api_url,
+      useRateLimiter = false,
+      sleepSeconds = 0.75,
+    } = config;
+    const api = require('./api')({ api_key, api_username, api_url, useRateLimiter, sleepSeconds });
 
     return {
       tagGroups: require('./models/tagGroups')(api),
@@ -15,12 +21,12 @@ const discourse = Object.assign(
       users: require('./models/users')(api),
       admin: require('./models/admin')(api),
       enums: require('./models/enums'),
-      utils: require('./utils'),
+      utils: require('./utils/utils'),
     };
   },
   {
     enums: require('./models/enums'),
-    utils: require('./utils'),
+    utils: require('./utils/utils'),
   },
 );
 

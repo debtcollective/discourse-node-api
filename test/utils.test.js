@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { paramsAsPropOf, mapObjKeys, flattenObj, splitProps } = require('../utils');
+const { paramsAsPropOf, mapObjKeys, flattenObj, splitProps } = require('../utils/utils');
 const { Req } = require('./fixtures');
 
 describe('utils', () => {
