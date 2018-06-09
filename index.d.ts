@@ -112,16 +112,32 @@ export namespace discourseApi {
   }
 
   export interface Trust {
-    none: 0;
-    entry: 1;
-    moderator: 2;
-    collectiveAdmin: 3;
-    platformAdmin: 4;
+    new: 0;
+    basic: 1;
+    member: 2;
+    regular: 3;
+    leader: 4;
   }
+
+  export interface Permission {
+    create_reply_see: 1;
+    reply_see: 2;
+    see: 3;
+  }
+
+export interface Notification {
+    muted: 0;
+    regular: 1;
+    tracking: 2;
+    watching: 3;
+    watching_first_post: 4
+}
 
   export interface Enums {
     visibility: Visibility;
     trust: Trust;
+    permission: Permission;
+    notification: Notification;
   }
 
   export interface Utils {
