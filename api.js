@@ -1,5 +1,7 @@
 const superagent = require('superagent');
-const { paramsAsPropOf, applyArrayParams, extractBody, noObjects, noNulls, splitProps } = require('./utils');
+const { paramsAsPropOf, extractBody, noObjects, splitProps } = require('./utils/utils');
+const constructRateLimiter = require('./utils/rateLimiter.js');
+const qs = require('qs');
 
 const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;
 
@@ -44,19 +46,19 @@ const pullDeleting = (prop, obj) => {
   return v;
 };
 
-const makeBodiedRequest = (req, bodyProp, body, auth) =>
-  extractBody(
-    splitBodyProps(body).then(({ left: arr, right: nonArr }) =>
-      // console.error(arr, nonArr),
-      Object.keys(arr).reduce(
-        (req, k) => (applyArrayParams(k, arr[k], req), req),
-        req.use(log).field({ ...fixParams(nonArr)(pullDeleting('asPropOf', nonArr)), ...auth }),
-      ),
-    ),
-  )(bodyProp);
+const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
+  const string = qs.stringify(body);
+  req
+    .use(log)
+    .query(string)
+    .field(auth);
+  return extractBody(req)(bodyProp);
+};
 
 const makeQueriedRequest = (req, bodyProp, params, auth) =>
-  extractBody(req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }))(bodyProp);
+  extractBody(
+    req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }),
+  )(bodyProp);
 
 /**
  * Constructs an instance of the Discourse API
@@ -65,31 +67,24 @@ const makeQueriedRequest = (req, bodyProp, params, auth) =>
  * @return {discourseApi.DiscourseApiShuttle}
  */
 module.exports = config => {
-  const { api_key, api_username = 'system', api_url } = config;
+  const { api_key, api_username = 'system', api_url, useRateLimiter, sleepSeconds } = config;
+  const limitRate = constructRateLimiter(useRateLimiter, sleepSeconds);
   const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ''}${url}`;
   const auth = Object.freeze({ api_key, api_username });
 
   const sa = superagent.agent();
 
   const authGet = (url, bodyProp = null) => (params = {}) =>
-    !url.startsWith(api_url)
-      ? authGet(fixUrl(url), bodyProp)(params)
-      : makeQueriedRequest(sa.get(url), bodyProp, params, auth);
+    limitRate(makeQueriedRequest(sa.get(fixUrl(url)), bodyProp, params, auth));
 
   const authPost = (url, bodyProp = null) => (body = {}) =>
-    !url.startsWith(api_url)
-      ? authPost(fixUrl(url), bodyProp)(body)
-      : makeBodiedRequest(sa.post(url), bodyProp, body, auth);
+    limitRate(makeBodiedRequest(sa.post(fixUrl(url)), bodyProp, body, auth));
 
   const authPut = (url, bodyProp = null) => (body = {}) =>
-    !url.startsWith(api_url)
-      ? authPut(fixUrl(url), bodyProp)(body)
-      : makeBodiedRequest(sa.put(url), bodyProp, body, auth);
+    limitRate(makeBodiedRequest(sa.put(fixUrl(url)), bodyProp, body, auth));
 
   const authDelete = (url, bodyProp = null) => (params = {}) =>
-    !url.startsWith(api_url)
-      ? authDelete(fixUrl(url), bodyProp)(params)
-      : makeQueriedRequest(sa.delete(url), bodyProp, params, auth);
+    limitRate(makeQueriedRequest(sa.delete(fixUrl(url)), bodyProp, params, auth));
 
   return { authGet, authPost, authPut, authDelete };
 };

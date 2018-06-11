@@ -1,17 +1,9 @@
 const { expect } = require('chai');
 
-const { applyArrayParams, paramsAsPropOf, mapObjKeys, flattenObj, splitProps } = require('../utils');
+const { paramsAsPropOf, mapObjKeys, flattenObj, splitProps } = require('../utils/utils');
 const { Req } = require('./fixtures');
 
 describe('utils', () => {
-  describe('applyArrayParams', () => {
-    it('should apply the params with the key', () => {
-      const req = applyArrayParams('foo', [1, 2, 3], new Req());
-
-      expect(req._fields).eql([['foo[]', 1], ['foo[]', 2], ['foo[]', 3]]);
-    });
-  });
-
   describe('paramsAsPropOf', () => {
     it('should map the properties of the object to properties of the key', () => {
       const obj = { a: 1, b: 2 };

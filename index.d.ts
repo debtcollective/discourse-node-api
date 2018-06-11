@@ -126,11 +126,6 @@ export namespace discourseApi {
 
   export interface Utils {
     paramsAsPropsOf: (params: Params) => (asPropsOf: string) => Params;
-    applyArrayParams: (
-      key: string,
-      values: (string | number | boolean | Blob | Buffer)[],
-      req: SuperAgentRequest,
-    ) => SuperAgentRequest;
     mapObjKeys: (mapKey: (key: string, value: any) => string) => (obj: any) => any;
     flattenObj: (obj: any) => any;
     splitProps: (predicate: (v: any, k: string | number) => boolean, obj: any) => { left: any; right: any };
