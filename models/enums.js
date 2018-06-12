@@ -10,15 +10,22 @@ module.exports = {
     everyone: 99,
   },
   trust: {
-    none: 0,
-    entry: 1,
-    moderator: 2,
-    collectiveAdmin: 3,
-    platformAdmin: 4,
+    new: 0,
+    basic: 1,
+    member: 2,
+    regular: 3,
+    leader: 4, // moderators and admins. The only trust level that must be manually granted
   },
   permission: {
     create_reply_see: 1,
     reply_see: 2,
     see: 3,
+  },
+  notification: {
+    muted: 0,
+    regular: 1,
+    tracking: 2,
+    watching: 3,
+    watching_first_post: 4,
   },
 };
