@@ -20,6 +20,7 @@ const discourse = Object.assign(
       posts: require('./models/posts')(api),
       users: require('./models/users')(api),
       admin: require('./models/admin')(api),
+      tags: require('./models/tags')(api),
       enums: require('./models/enums'),
       utils: require('./utils/utils'),
     };

@@ -97,6 +97,10 @@ export namespace discourseApi {
     differ(seed: TagGroup, existing: TagGroup): boolean;
   }
 
+  export interface Tags {
+    getAll(): Promise<Tag[]>;
+  }
+
   export interface Topics {
     get(id: number): Promise<Topic>;
     update(t: Topic): Promise<Topic>;
