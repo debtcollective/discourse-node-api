@@ -5,5 +5,11 @@
 
 // todo index.d.ts
 module.exports = api => ({
-  getAll: api.authGet('/tags.json', 'tags'),
+  getAll: async () => {
+    const raw = await api.authGet('/tags.json')();
+
+    const tags = raw.extras.tag_groups.reduce((tagList, { tags }) => [...tagList, ...tags], []);
+
+    return raw.tags.concat(tags);
+  },
 });
