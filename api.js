@@ -47,7 +47,7 @@ const pullDeleting = (prop, obj) => {
 };
 
 const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
-  const string = qs.stringify(body);
+  const string = qs.stringify(body, { arrayFormat: 'brackets' });
   req
     .use(log)
     .query(string)
