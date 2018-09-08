@@ -1,12 +1,9 @@
-const api_url = 'http://localhost:8080';
-const api_username = 'someUser';
-const api_key = 'super secret key';
-
-const api = require('../api')({ api_url, api_username, api_key });
-
 const { expect } = require('chai');
 const nock = require('nock');
 const qs = require('query-string');
+const { mockApi: api } = require('./fixtures');
+
+const { api_url, api_key, api_username } = api;
 
 const queried = (uri, body, cb) => cb(null, [200, qs.parseUrl(uri).query]);
 const bodied = (uri, body, cb) => cb(null, [200, { body }]);
