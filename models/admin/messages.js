@@ -4,6 +4,7 @@ const message = api =>
       target_usernames,
       raw,
       title,
+      topic_id = null,
       unlist_topic = false,
       is_warning = false,
       archetype = 'private_message',
@@ -14,15 +15,14 @@ const message = api =>
       this._api = api;
 
       this._formData = {
-        target_usernames,
         raw,
-        title,
         unlist_topic,
         is_warning,
         archetype,
         nested_post,
         typing_duration_msecs,
         composer_duration_open_msecs,
+        ...(topic_id !== null ? { topic_id } : { target_usernames, title }),
       };
     }
 
