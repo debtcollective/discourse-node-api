@@ -1,7 +1,9 @@
 // import { SuperAgentRequest } from 'superagent';
 
 export namespace discourseApi {
-  declare function discourse(config: discourseApi.DiscourseApiConfiguration): discourseApi.DiscourseApi;
+  declare function discourse(
+    config: discourseApi.DiscourseApiConfiguration,
+  ): discourseApi.DiscourseApi;
   export type discourse = typeof discourse & discourseApi.UtilsEnums;
   export type SuperAgentRequest = SuperAgentRequest;
 
@@ -105,6 +107,7 @@ export namespace discourseApi {
     get(id: number): Promise<Topic>;
     update(t: Topic): Promise<Topic>;
     getPostId(t: Topic): number;
+    invite(id: number, { user: ?string, groupNames: ?string[], email: ?string, customMessage: ?string }): Promise<Topic>;
   }
 
   export interface Visibility {
@@ -129,13 +132,13 @@ export namespace discourseApi {
     see: 3;
   }
 
-export interface Notification {
+  export interface Notification {
     muted: 0;
     regular: 1;
     tracking: 2;
     watching: 3;
-    watching_first_post: 4
-}
+    watching_first_post: 4;
+  }
 
   export interface Enums {
     visibility: Visibility;
@@ -148,6 +151,9 @@ export interface Notification {
     paramsAsPropsOf: (params: Params) => (asPropsOf: string) => Params;
     mapObjKeys: (mapKey: (key: string, value: any) => string) => (obj: any) => any;
     flattenObj: (obj: any) => any;
-    splitProps: (predicate: (v: any, k: string | number) => boolean, obj: any) => { left: any; right: any };
+    splitProps: (
+      predicate: (v: any, k: string | number) => boolean,
+      obj: any,
+    ) => { left: any; right: any };
   }
 }
