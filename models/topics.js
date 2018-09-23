@@ -25,4 +25,7 @@ module.exports = api => ({
       ...(groupNames ? { group_names: groupNames } : {}),
       ...(customMessage ? { custom_message: customMessage } : {}),
     }),
+
+  removeAllowedUser: (topicId, username) =>
+    api.authPut(`/t/${topicId}/remove-allowed-user`)({ username }),
 });
