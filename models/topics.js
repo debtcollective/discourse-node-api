@@ -5,6 +5,7 @@
 module.exports = api => ({
   get: id => api.authGet(`/t/${id}.json`)(),
   update: t => api.authPut(`/t/${t.slug}/${t.id}.json`)(t),
+  updateStatus: (topicId, status) => api.authPut(`/t/${topicId}/status`)({ status, enabled: true }),
   getPostId: ({
     post_stream: {
       posts: [{ id }],
