@@ -13,16 +13,15 @@ const discourse = Object.assign(
     const api = require('./api')({ api_key, api_username, api_url, useRateLimiter, sleepSeconds });
 
     return {
-      tagGroups: require('./models/tagGroups')(api),
+      admin: require('./models/admin')(api),
+      badges: require('./models/badges')(api),
       categories: require('./models/categories')(api),
       groups: require('./models/groups')(api),
-      topics: require('./models/topics')(api),
       posts: require('./models/posts')(api),
-      users: require('./models/users')(api),
-      admin: require('./models/admin')(api),
+      tagGroups: require('./models/tagGroups')(api),
       tags: require('./models/tags')(api),
-      enums: require('./models/enums'),
-      utils: require('./utils/utils'),
+      topics: require('./models/topics')(api),
+      users: require('./models/users')(api),
     };
   },
   {
