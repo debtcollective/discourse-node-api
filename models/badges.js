@@ -3,8 +3,6 @@
  */
 module.exports = api => ({
   userBadges: username => api.authGet(`/user-badges/${username}.json`)(),
-  assignBadgeToUser: ({ username, badge_id, reason }) => {
-    debugger;
-    api.authPost(`/user-badges.json`)({ username, badge_id, reason });
-  },
+  assignBadgeToUser: ({ username, badge_id, reason }) =>
+    api.authPost(`/user-badges.json`)({ username, badge_id, reason }),
 });

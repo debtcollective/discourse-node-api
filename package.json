@@ -1,9 +1,9 @@
 {
   "name": "discourse-node-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node.js API for Discourse's REST API",
   "main": "index.js",
-  "repository": "github.com/debtsyndicate/discourse-node-api",
+  "repository": "github.com/debtcollective/discourse-node-api",
   "author": "The Debt Syndicate",
   "license": "MIT",
   "private": false,
