@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js API for Discourse's REST API",
   "main": "index.js",
-  "repository": "github.com/debtcollective/discourse-node-api",
-  "author": "The Debt Syndicate",
-  "license": "MIT",
+  "repository": "https://github.com/debtcollective/discourse-node-api",
+  "author": "Debt Collective",
+  "license": "BSD-3-Clause",
   "private": false,
   "scripts": {
     "test": "DISCOURSE_NODE_SUPPRESS_LOGS=1 mocha",
