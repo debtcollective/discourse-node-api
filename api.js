@@ -1,6 +1,5 @@
 const superagent = require('superagent');
 const { paramsAsPropOf, extractBody, noObjects, splitProps } = require('./utils/utils');
-const constructRateLimiter = require('./utils/rateLimiter.js');
 const qs = require('qs');
 
 const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;
@@ -68,23 +67,26 @@ const makeQueriedRequest = (req, bodyProp, params, auth) =>
  */
 module.exports = config => {
   const { api_key, api_username = 'system', api_url, useRateLimiter, sleepSeconds } = config;
-  const limitRate = constructRateLimiter(useRateLimiter, sleepSeconds);
   const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ''}${url}`;
   const auth = Object.freeze({ api_key, api_username });
 
   const sa = superagent.agent();
 
-  const authGet = (url, bodyProp = null) => (params = {}) =>
-    limitRate(makeQueriedRequest(sa.get(fixUrl(url)), bodyProp, params, auth));
+  const authGet = (url, bodyProp = null) => (params = {}) => {
+    return makeQueriedRequest(sa.get(fixUrl(url)), bodyProp, params, auth);
+  };
 
-  const authPost = (url, bodyProp = null) => (body = {}) =>
-    limitRate(makeBodiedRequest(sa.post(fixUrl(url)), bodyProp, body, auth));
+  const authPost = (url, bodyProp = null) => (body = {}) => {
+    return makeBodiedRequest(sa.post(fixUrl(url)), bodyProp, body, auth);
+  };
 
-  const authPut = (url, bodyProp = null) => (body = {}) =>
-    limitRate(makeBodiedRequest(sa.put(fixUrl(url)), bodyProp, body, auth));
+  const authPut = (url, bodyProp = null) => (body = {}) => {
+    return makeBodiedRequest(sa.put(fixUrl(url)), bodyProp, body, auth);
+  };
 
-  const authDelete = (url, bodyProp = null) => (params = {}) =>
-    limitRate(makeQueriedRequest(sa.delete(fixUrl(url)), bodyProp, params, auth));
+  const authDelete = (url, bodyProp = null) => (params = {}) => {
+    return makeQueriedRequest(sa.delete(fixUrl(url)), bodyProp, params, auth);
+  };
 
   return { authGet, authPost, authPut, authDelete };
 };
