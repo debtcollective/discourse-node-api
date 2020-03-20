@@ -3,32 +3,25 @@
  */
 const discourse = Object.assign(
   config => {
-    const {
-      api_key,
-      api_username = 'system',
-      api_url,
-      useRateLimiter = false,
-      sleepSeconds = 0.75,
-    } = config;
-    const api = require('./api')({ api_key, api_username, api_url, useRateLimiter, sleepSeconds });
+    const { api_key, api_username = "system", api_url } = config;
+    const api = require("./api")({ api_key, api_username, api_url });
 
     return {
-      tagGroups: require('./models/tagGroups')(api),
-      categories: require('./models/categories')(api),
-      groups: require('./models/groups')(api),
-      topics: require('./models/topics')(api),
-      posts: require('./models/posts')(api),
-      users: require('./models/users')(api),
-      admin: require('./models/admin')(api),
-      tags: require('./models/tags')(api),
-      enums: require('./models/enums'),
-      utils: require('./utils/utils'),
+      admin: require("./models/admin")(api),
+      badges: require("./models/badges")(api),
+      categories: require("./models/categories")(api),
+      groups: require("./models/groups")(api),
+      posts: require("./models/posts")(api),
+      tagGroups: require("./models/tagGroups")(api),
+      tags: require("./models/tags")(api),
+      topics: require("./models/topics")(api),
+      users: require("./models/users")(api)
     };
   },
   {
-    enums: require('./models/enums'),
-    utils: require('./utils/utils'),
-  },
+    enums: require("./models/enums"),
+    utils: require("./utils/utils")
+  }
 );
 
 module.exports = discourse;

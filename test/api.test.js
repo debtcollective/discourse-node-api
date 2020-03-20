@@ -1,22 +1,22 @@
-const { expect } = require('chai');
-const nock = require('nock');
-const qs = require('query-string');
-const { mockApi: api } = require('./fixtures');
+const { expect } = require("chai");
+const nock = require("nock");
+const qs = require("query-string");
+const { mockApi: api } = require("./fixtures");
 
 const { api_url, api_key, api_username } = api;
 
 const queried = (uri, body, cb) => cb(null, [200, qs.parseUrl(uri).query]);
 const bodied = (uri, body, cb) => cb(null, [200, { body }]);
 
-const returnReq = '/returnReqContent';
-const bodyRes = '/bodyResponse';
+const returnReq = "/returnReqContent";
+const bodyRes = "/bodyResponse";
 
 const bindReturnReq = (n, method) => {
   const r = n[method](returnReq)
     .times(100)
     .query(() => true);
 
-  if (method === 'get' || method === 'delete') {
+  if (method === "get" || method === "delete") {
     r.reply(queried);
   } else {
     r.reply(bodied);
@@ -28,18 +28,18 @@ const bindBodyRes = (n, method) => {
     .times(100)
     .query(() => true);
 
-  r.reply((_, __, cb) => cb(null, [200, { fooBar: '20' }]));
+  r.reply((_, __, cb) => cb(null, [200, { fooBar: "20" }]));
 };
 
-['get', 'put', 'post', 'delete'].reduce((n, method) => {
+["get", "put", "post", "delete"].reduce((n, method) => {
   bindReturnReq(n, method);
   bindBodyRes(n, method);
   return n;
 }, nock(api_url));
 
-const testQueriedAuth = res => {
-  expect(res.api_key).eq(api_key);
-  expect(res.api_username).eq(api_username);
+const testAuthHeaders = req => {
+  expect(req.header["Api-Key"]).eq(api_key);
+  expect(req.header["Api-Username"]).eq(api_username);
 };
 
 const testBodiedAuth = ({ body }) => {
@@ -47,109 +47,117 @@ const testBodiedAuth = ({ body }) => {
   expect(body).include(`name="api_username"\r\n\r\n${api_username}`);
 };
 
-const testExtractBody = fooBar => {
-  expect(fooBar).exist;
-  expect(fooBar).eq('20');
+const testExtractBody = response => {
+  const body = response.body;
+
+  expect(body.fooBar).exist;
+  expect(body.fooBar).eq("20");
 };
 
 const doTestNoNull = r =>
   Object.keys(r).forEach(k => {
     expect(r[k]).not.null;
-    expect(r[k]).not.eq('null');
+    expect(r[k]).not.eq("null");
   });
 
 const testNoQueriedNull = doTestNoNull;
 const testNoBodiedNull = ({ body }) => doTestNoNull(body);
 
-const testCorrectedQueryArray = orig => r => (
-  // Subtract 2 for the auth parameters
-  expect(Object.keys(r).length - 2, "Response did not contain all of original's properties").eq(
-    Object.keys(orig).length,
-  ),
-  Object.keys(r).forEach(k => {
-    if (Array.isArray(orig[k.replace('[]', '')])) {
-      expect(r[k]).eql(orig[k.replace('[]', '')]);
-    }
-  })
-);
+const testCorrectedQueryArray = orig => res => {
+  const body = res.body;
 
-describe('api', () => {
-  describe('authGet', () => {
-    it('should include the credentials in the query', () =>
+  expect(Object.keys(body).length).eq(Object.keys(body).length),
+    Object.keys(body).forEach(k => {
+      if (Array.isArray(orig[k.replace("[]", "")])) {
+        expect(body[k]).eql(orig[k.replace("[]", "")]);
+      }
+    });
+};
+
+describe("api", () => {
+  describe("authGet", () => {
+    it("should include the credentials in headers", () => {
+      const request = api.authGet(returnReq)({ id: 1 });
+
+      testAuthHeaders(request);
+    });
+
+    it("should extract the body prop", () => {
       api
-        .authGet(returnReq)()
-        .then(testQueriedAuth));
+        .authGet(bodyRes)()
+        .then(testExtractBody);
+    });
 
-    it('should extract the body prop', () =>
-      api
-        .authGet(bodyRes, 'fooBar')()
-        .then(testExtractBody));
-
-    it('should not allow nulls in the params', () =>
+    it("should not allow nulls in the params", () =>
       api
         .authGet(returnReq)({ twenty: null })
         .then(testNoQueriedNull));
 
-    it('should correctly query array parameters', () => {
-      const orig = { arr: ['1', '2', '3'] };
+    it("should correctly query array parameters", () => {
+      const orig = { arr: ["1", "2", "3"] };
+
       return api
         .authGet(returnReq)(orig)
         .then(testCorrectedQueryArray(orig));
     });
   });
 
-  describe('authPut', () => {
-    it('should include the credentials in the body', () =>
-      api
-        .authPut(returnReq)()
-        .then(testBodiedAuth));
+  describe("authPut", () => {
+    it("should include the credentials in headers", () => {
+      const request = api.authPut(returnReq)({ id: 1 });
 
-    it('should extract the body prop', () =>
+      testAuthHeaders(request);
+    });
+
+    it("should extract the body prop", () =>
       api
-        .authPut(bodyRes, 'fooBar')()
+        .authPut(bodyRes, "fooBar")()
         .then(testExtractBody));
 
-    it('should not allow nulls in the params', () =>
+    it("should not allow nulls in the params", () =>
       api
         .authPut(returnReq)({ twenty: null })
         .then(testNoBodiedNull));
   });
 
-  describe('authPost', () => {
-    it('should include the credentials in the body', () =>
-      api
-        .authPost(returnReq)()
-        .then(testBodiedAuth));
+  describe("authPost", () => {
+    it("should include the credentials in the body", () => {
+      const request = api.authPost(returnReq)();
 
-    it('should extract the body prop', () =>
+      testAuthHeaders(request);
+    });
+
+    it("should extract the body prop", () =>
       api
-        .authPost(bodyRes, 'fooBar')()
+        .authPost(bodyRes, "fooBar")()
         .then(testExtractBody));
 
-    it('should not allow nulls in the params', () =>
+    it("should not allow nulls in the params", () =>
       api
         .authPost(returnReq)({ twenty: null })
         .then(testNoBodiedNull));
   });
 
-  describe('authDelete', () => {
-    it('should include the credentials in the query', () =>
-      api
-        .authDelete(returnReq)()
-        .then(testQueriedAuth));
+  describe("authDelete", () => {
+    it("should include the credentials in the query", () => {
+      const request = api.authDelete(returnReq)();
 
-    it('should extract the body prop', () =>
+      testAuthHeaders(request);
+    });
+
+    it("should extract the body prop", () =>
       api
-        .authDelete(bodyRes, 'fooBar')()
+        .authDelete(bodyRes, "fooBar")()
         .then(testExtractBody));
 
-    it('should not allow nulls in the params', () =>
+    it("should not allow nulls in the params", () =>
       api
         .authDelete(returnReq)({ twenty: null })
         .then(testNoQueriedNull));
 
-    it('should correctly query array parameters', () => {
-      const orig = { arr: ['1', '2', '3'] };
+    it("should correctly query array parameters", () => {
+      const orig = { arr: ["1", "2", "3"] };
+
       return api
         .authDelete(returnReq)(orig)
         .then(testCorrectedQueryArray(orig));

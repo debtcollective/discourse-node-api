@@ -1,7 +1,11 @@
-const superagent = require('superagent');
-const { paramsAsPropOf, extractBody, noObjects, splitProps } = require('./utils/utils');
-const constructRateLimiter = require('./utils/rateLimiter.js');
-const qs = require('qs');
+const superagent = require("superagent");
+const {
+  paramsAsPropOf,
+  extractBody,
+  noObjects,
+  splitProps
+} = require("./utils/utils");
+const qs = require("qs");
 
 const suppressLogs = process.env.DISCOURSE_NODE_SUPPRESS_LOGS == 1;
 
@@ -33,8 +37,6 @@ const fixParams = params => asPropOf => {
   return ps;
 };
 
-const splitBodyProps = body => Promise.resolve(splitProps(Array.isArray, body));
-
 /**
  * Deletes and returns the value of the property from obj
  * @param {string} prop Name of property to return and delete from obj
@@ -46,19 +48,27 @@ const pullDeleting = (prop, obj) => {
   return v;
 };
 
-const makeBodiedRequest = function makeBodiedRequest(req, bodyProp, body, auth) {
-  const string = qs.stringify(body, { arrayFormat: 'brackets' });
-  req
+/**
+ * Makes a POST/PUT request with Content-Type set to application/json
+ * This is the default in superagent
+ */
+const makeBodiedRequest = (req, params, auth) => {
+  return req
     .use(log)
-    .query(string)
-    .field(auth);
-  return extractBody(req)(bodyProp);
+    .set("Api-Key", auth.api_key)
+    .set("Api-Username", auth.api_username)
+    .send(params);
 };
 
-const makeQueriedRequest = (req, bodyProp, params, auth) =>
-  extractBody(
-    req.use(log).query({ ...fixParams(params)(pullDeleting('asPropOf', params)), ...auth }),
-  )(bodyProp);
+const makeQueriedRequest = (req, params, auth) => {
+  return req
+    .use(log)
+    .set("Api-Key", auth.api_key)
+    .set("Api-Username", auth.api_username)
+    .query({
+      ...fixParams(params)(pullDeleting("asPropOf", params))
+    });
+};
 
 /**
  * Constructs an instance of the Discourse API
@@ -67,24 +77,35 @@ const makeQueriedRequest = (req, bodyProp, params, auth) =>
  * @return {discourseApi.DiscourseApiShuttle}
  */
 module.exports = config => {
-  const { api_key, api_username = 'system', api_url, useRateLimiter, sleepSeconds } = config;
-  const limitRate = constructRateLimiter(useRateLimiter, sleepSeconds);
-  const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ''}${url}`;
+  const { api_key, api_username = "system", api_url } = config;
+  const fixUrl = url => `${!url.startsWith(api_url) ? api_url : ""}${url}`;
   const auth = Object.freeze({ api_key, api_username });
 
   const sa = superagent.agent();
 
-  const authGet = (url, bodyProp = null) => (params = {}) =>
-    limitRate(makeQueriedRequest(sa.get(fixUrl(url)), bodyProp, params, auth));
+  const authGet = url => (params = {}) => {
+    const apiEndpoint = fixUrl(url);
 
-  const authPost = (url, bodyProp = null) => (body = {}) =>
-    limitRate(makeBodiedRequest(sa.post(fixUrl(url)), bodyProp, body, auth));
+    return makeQueriedRequest(sa.get(apiEndpoint), params, auth);
+  };
 
-  const authPut = (url, bodyProp = null) => (body = {}) =>
-    limitRate(makeBodiedRequest(sa.put(fixUrl(url)), bodyProp, body, auth));
+  const authPost = url => (body = {}) => {
+    const apiEndpoint = fixUrl(url);
 
-  const authDelete = (url, bodyProp = null) => (params = {}) =>
-    limitRate(makeQueriedRequest(sa.delete(fixUrl(url)), bodyProp, params, auth));
+    return makeBodiedRequest(sa.post(apiEndpoint), body, auth);
+  };
+
+  const authPut = url => (body = {}) => {
+    const apiEndpoint = fixUrl(url);
+
+    return makeBodiedRequest(sa.put(apiEndpoint), body, auth);
+  };
+
+  const authDelete = url => (params = {}) => {
+    const apiEndpoint = fixUrl(url);
+
+    return makeQueriedRequest(sa.delete(apiEndpoint), params, auth);
+  };
 
   return { authGet, authPost, authPut, authDelete };
 };

@@ -23,10 +23,10 @@ export namespace discourseApi {
   }
 
   export interface DiscourseApiShuttle {
-    authGet: (url: String, bodyProp?: String) => (params?: Params) => Promise<Object>;
-    authPost: (url: String, bodyProp?: String) => (body?: Params) => Promise<Object>;
-    authPut: (url: String, bodyProp?: String) => (body?: Params) => Promise<Object>;
-    authDelete: (url: String, bodyProp?: String) => (params?: Params) => Promise<Object>;
+    authGet: (url: String) => (params?: Params) => Promise<Object>;
+    authPost: (url: String) => (body?: Params) => Promise<Object>;
+    authPut: (url: String) => (body?: Params) => Promise<Object>;
+    authDelete: (url: String) => (params?: Params) => Promise<Object>;
   }
 
   export interface DiscourseApiConfiguration {
