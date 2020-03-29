@@ -15,7 +15,7 @@
   "dependencies": {
     "@types/superagent": "4.1.7",
     "chai": "^4.1.2",
-    "mocha": "^5.0.5",
+    "mocha": "^6.0.0",
     "multiparty": "^4.1.3",
     "nock": "^9.2.3",
     "qs": "^6.5.2",
