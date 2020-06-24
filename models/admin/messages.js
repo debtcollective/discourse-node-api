@@ -18,7 +18,8 @@ const message = api =>
         raw,
         unlist_topic,
         is_warning,
-        archetype,
+        archetype:
+          topic_id && archetype === "private_message" ? "regular" : archetype,
         nested_post,
         typing_duration_msecs,
         composer_duration_open_msecs,
