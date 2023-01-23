@@ -381,9 +381,9 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
 cookiejar@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/cookiejar/-/cookiejar-2.1.2.tgz#dd8a235530752f988f9a0844f3fc589e3111125c"
-  integrity sha512-Mw+adcfzPxcPeI+0WlvRrr/3lGVO0bD75SxX6811cxSh1Wbxx7xZBGK1eVtDf6si8rg2lhnUjsVLMFMfbRIuwA==
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/cookiejar/-/cookiejar-2.1.4.tgz#ee669c1fea2cf42dc31585469d193fef0d65771b"
+  integrity sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==
 
 copy-descriptor@^0.1.0:
   version "0.1.1"
@@ -2082,6 +2082,11 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
+
+snyk@^1.316.1:
+  version "1.1089.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1089.0.tgz#3af9c8b4866bfdfc9799d89f4054cf1f1c53d932"
+  integrity sha512-2NOszQsDjkxmcL+ZrYz2GgHKfoI8A+8rp4DFPFSTdkni0bzDeGx8LD5pLScDTT393j7w46TT0z7NZX8gZY5tAA==
 
 source-map-resolve@^0.5.0:
   version "0.5.2"
